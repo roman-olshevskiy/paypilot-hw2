@@ -1,0 +1,90 @@
+{
+  "prompt_version": "base.v1",
+  "set_hash": "92f5e7f20c48",
+  "profile": "clean",
+  "judge_model": "not-used",
+  "rubric_version": "rubric.v1",
+  "elapsed": 4.2,
+  "set": "golden",
+  "gate": "daily",
+  "ran_at": "2026-10-04T00:19:27.209922+00:00",
+  "passed": 1,
+  "total": 1,
+  "skipped": 0,
+  "by_layer": {
+    "generation": {
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "coverage": {
+    "cases": 1,
+    "layers": {
+      "generation": 1
+    },
+    "oracles": {
+      "engine": 1
+    },
+    "sources": {
+      "edge": 1
+    },
+    "severities": {
+      "high": 1
+    },
+    "ladder_levels": [
+      2
+    ],
+    "gates": {
+      "daily": 1
+    },
+    "human_oracle_pct": 0.0,
+    "severity_filled_pct": 100.0
+  },
+  "cases": [
+    {
+      "skipped": false,
+      "id": "FX-007",
+      "layer": "generation",
+      "oracle": "engine",
+      "severity": "high",
+      "gate": "daily",
+      "runs": 1,
+      "verdict": {
+        "passed": true,
+        "level": 2,
+        "assertion": "tool_grounded_numeric",
+        "detail": "quote_fx.final_amount = 1078.251087"
+      },
+      "answers": [
+        "Here's your FX conversion breakdown:\n\n**Amount to convert:** 1,001 EUR  \n**Mid rate:** 1.086957 EUR/USD  \n**Tier:** tier2  \n**Spread:** 0.9%  \n\n**Calculation:**\n- Gross amount (mid rate × EUR): 1,088.04 USD\n- Spread applied (0.9%): −9.79 USD\n- Free allowance: Not applied (your €1,000 allowance covers only part of this transaction, leaving €1 subject to spread)\n\n**Final amount you receive: 1,078.25"
+      ],
+      "latency_ms": 4094,
+      "tokens": 4876,
+      "tool_calls": [
+        {
+          "name": "quote_fx",
+          "arguments": {
+            "customer_id": "CUS-0007",
+            "amount": 1001,
+            "from_currency": "EUR",
+            "to_currency": "USD"
+          },
+          "result": {
+            "from_currency": "EUR",
+            "to_currency": "USD",
+            "amount": 1001,
+            "mid_rate": 1.086957,
+            "tier": "tier2",
+            "spread_pct": 0.9,
+            "allowance_total_eur": 1000,
+            "allowance_used_before_eur": 0.0,
+            "allowance_applied": false,
+            "gross_amount": 1088.043478,
+            "spread_amount": 9.792391,
+            "final_amount": 1078.251087
+          }
+        }
+      ]
+    }
+  ]
+}

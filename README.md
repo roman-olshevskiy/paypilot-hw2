@@ -1,7 +1,7 @@
 # L03 · Automated Eval Suite — PayPilot · ДЗ №2
 
 Автор: Roman Olshevskyi. Підготовка: 2026-10-04. Мандат: Ship it.
-Статус: кроки 1–8 виконано; три живі прогони, прогноз і фінальний residual-risk ще не виконані.
+Статус: комплект ДЗ завершено; три живі daily-прогони та контроль відновлення виконано. Здача в LMS — посилання на main.
 Репозиторій здачі: https://github.com/roman-olshevskiy/paypilot-hw2. Робоча гілка roman-olshevskyi/hw2; здача — main.
 
 ## Запуск
@@ -14,7 +14,7 @@
 Стенд має бути локальним, із live Anthropic. Ключ лише в локальному .env стенду.
 Налаштування L03: STAND_DIR=../paypilot-stand, EVAL_STAND_URL=http://host.docker.internal:8000, JUDGE_MODEL=not-used.
 Clock: 2026-09-15T10:00:00Z. Сам course runner не застосовує context.clock; capture adapter встановлює та перевіряє його після кожного reset.
-Модель за конфігурацією preflight: Anthropic, default claude-haiku-4-5. Фактичний model ID запитів буде підтверджено лише live traces.
+Фактична модель усіх живих викликів за traces: claude-haiku-4-5-20251001.
 
 З каталогу кіту:
 
@@ -24,7 +24,7 @@ docker compose run --rm -T eval python generate_golden.py --output sets/golden.j
 docker compose run --rm -T eval --set golden --dry-run
 docker compose run --rm -T eval python -m unittest discover -s tests -p test_hw2_contract.py -v
 
-# Обов’язкові live-прогони кроку 9; ПОКИ НЕ ВИКОНАНО
+# Повтор живої серії: використовувати тестовий запуск нижче
 docker compose run --rm -T eval python hw2_capture.py --set golden --profile clean
 docker compose run --rm -T eval python hw2_capture.py --set golden --profile lesson-03
 ~~~
@@ -85,39 +85,79 @@ Daily: 30 кейсів ×1; release: 5 human ×5, вони не входять �
 
 ## Прогони
 
-| Прогін | Профіль | Результат | Звіт |
+| Прогін | Профіль | Результат | Сирий звіт |
 |---|---|---|---|
-| Baseline | clean | Не виконано, крок 9 | Ще не створено |
-| Дефектна система | lesson-03 | Не виконано, крок 9 | Ще не створено |
-| Зміна промпту | clean + власний рядок | Не виконано, крок 10 | Ще не створено |
+| Baseline | clean | 30/30 | [golden-clean-20261004T000956.json](reports/golden-clean-20261004T000956.json) |
+| Дефектна система | lesson-03 | 14/30 | [golden-lesson-03-20261004T001243.json](reports/golden-lesson-03-20261004T001243.json) |
+| Власний рядок промпту | clean | 30/30 | [golden-clean-20261004T001507.json](reports/golden-clean-20261004T001507.json) |
+| Контроль після відновлення | clean | 1/1 | [golden-clean-20261004T001927.json](reports/golden-clean-20261004T001927.json) |
 
-Рядок промпту та прогноз ще не обрано. Перед третім прогоном прогноз буде окремим комітом у цьому репозиторії.
-Час/hash коміту зберігаються окремим evidence, до створення третього report.
-test_live_hw2.py дозволяє тимчасову правку лише з forecast-commit.json; відновлює базовий файл у finally.
-Зараз live-test discovery дав SKIP: серія не запускалася.
+Усі звіти мають set_hash 92f5e7f20c48. Три основні виконали ті самі 30 daily-кейсів, четвертий — лише FX-007.
+П'ять release/human кейсів не запускалися і не оцінювалися.
+Прогноз зафіксовано окремим [комітом 1768082](https://github.com/roman-olshevskiy/paypilot-hw2/commit/1768082aba930dd6a08fea499c3a967de57d1222)
+2026-10-04 00:12:01 UTC; третій звіт створено о 00:15:07 UTC.
+Точний рядок та початковий прогноз збережено нижче без виправлення заднім числом.
 
-Планова матриця дефектів, ще не виміряний результат:
+Фактична чутливість до цієї зміни: **0/30**, pass→fail=0, fail→pass=0; прогноз восьми падінь не справдився.
+Усі вісім відповідей містять правильну final_amount після спреду; наприклад FX-007 назвав 1078.25 USD.
+Рядок додано до базового файла, але модель не виконала його заборону показувати final_amount.
+Це спостереження одного запуску, не доказ стійкості до довільних змін промпту.
+FX-002 залишився green попри хибне пояснення часткового allowance: числовий oracle перевіряє суму, не весь текст.
 
-| Дефект lesson-03 | Кандидати на виявлення | Обмеження |
-|---|---|---|
-| D19 wrong duplicate window | DIS-002-N, DIS-006, CMP-004, DIS-001 | CMP-C12 може пройти при обох вікнах; не повне покриття |
-| D20 wrong tier spread | FX-003/005/007/009/011, CMP-C05 | На безкоштовному allowance спред лишається 0 |
-| D21 partial allowance | FX-007/009/011, FX-004 | Числа треба звірити з фактичними tool results |
-| D22 daily as monthly | LIM-003, LIM-HW2-MONTHLY | Текстовий LIM-001 може приховати зіпсований payload |
-| D26 ignored restriction | DIS-007 | False payload має підтверджуватися trace, не лише словами |
+Профіль lesson-03: 16 падінь, ознаки всіх п'яти дефектів у payload:
+D19 — DIS-006 (90 замість 60 днів); D20 — FX-007-S (1.5% замість 0.9%);
+D21 — FX-007 (spread лише на понадлімітний 1 EUR); D22 — LIM-003 (daily як monthly);
+D26 — DIS-007 (eligible=true при compliance_hold).
+[Матриця доказів](evidence/defect-analysis.json) містить request IDs і фактичні значення.
+Дефекти ввімкнено одночасно; ізольованих mutant-прогонів не було, тому це не п'ять незалежних оцінок detection rate.
 
-Виконано до live-серії:
-- Генератор і loader dry-run — passed.
-- Offline acceptance/guards — 6/6 passed.
-- Реальний preflight unittest — 1/1 passed, chat/model calls=0.
-- Початковий profile/clock і байти runtime base prompt після тесту відновлено.
-- [Докази підготовки](evidence/preparation-manifest.json), [preflight](evidence/preflight.json), [журнал](evidence/preflight-tests.txt).
+Усі дії зі стендом виконано реальними Python unittest:
+test_preflight_hw2.py і test_live_hw2.py; live-тест запускає Docker eval через hw2_capture.py,
+який делегує незмінному runner. Успішний unittest означає завершений прогін і збережені докази;
+lesson-03 всередині має 16 quality failures.
 
-Попередній бюджет трьох daily-прогонів: 90 chat requests.
-За agent usage L02 (USD0.383063 за 65 відповідей, без judge) орієнтир ≈USD0.53, плюс контроль відновлення.
-Це оцінка перенесення середнього usage, не measured L03 cost і не верхня межа.
-Плановий запас до ≈USD1.10 потребує контролю після кожного запуску; автоматичного dollar cap у L03 runner немає.
-Фактичні tokens, model calls і вартість будуть обчислені з captures та raw reports у кроці 11.
+Для повтору з каталогу кіту, після копіювання власних support-файлів і evidence/forecast-commit.json:
+
+~~~powershell
+$env:HW2_RUN_PROFILE='clean'
+$env:HW2_RUN_LABEL='baseline-clean'
+python -m unittest discover -s tests -p test_live_hw2.py -v
+$env:HW2_RUN_PROFILE='lesson-03'
+$env:HW2_RUN_LABEL='defective-lesson03'
+python -m unittest discover -s tests -p test_live_hw2.py -v
+$env:HW2_RUN_PROFILE='clean'
+$env:HW2_RUN_LABEL='prompt-changed-clean'
+$env:HW2_PROMPT_LINE=(Get-Content evidence/forecast-commit.json -Raw | ConvertFrom-Json).line
+python -m unittest discover -s tests -p test_live_hw2.py -v
+Remove-Item Env:HW2_PROMPT_LINE
+$env:HW2_ONLY='FX-007'
+$env:HW2_RUN_LABEL='restored-clean-control'
+python -m unittest discover -s tests -p test_live_hw2.py -v
+Remove-Item Env:HW2_ONLY
+~~~
+
+Python для host-тесту має бути реальним інтерпретатором, не Windows Store alias; Docker eval — Python 3.12.15.
+Runtime base prompt відновлено побайтово: before/after SHA256 однакові.
+Зовнішній prompt-guard snapshot може містити попередні D04/D05/D25, які відновлюються між тестами;
+фактичні clean/lesson-03 snapshots — before.json/during.json у кожному каталозі runs, профіль кожного запиту також є в trace.
+Не трактувати version label base.v1 як відсутність доданого рядка.
+
+Чистий клон кіту: loader dry-run пройшов із тим самим hash, offline acceptance/guards — 6/6 passed. [Журнал](evidence/clean-clone-offline-tests.txt).
+
+## Докази й вартість
+
+[Автоматичний аналіз](evidence/run-analysis.json), [повні captures](evidence/runs/),
+[походження кейсів](case-provenance.md), [залишкові ризики](residual-risk.md),
+[покажчик здачі](SUBMISSION.md), [підготовка](evidence/preparation-manifest.json).
+Підготовчі manifests фіксують стан до live-серії; остаточні результати наведено у run-analysis.json.
+
+Три daily: 90 chat requests, 185 model calls, input=438084, output=20890, total=458974 tokens.
+Разом із контролем: 91 chat requests, 187 model calls, input=442697, output=21153, total=463850.
+Captures узгоджуються із сумою tokens кожного raw report.
+Ціна Haiku 4.5: $1/M input та $5/M output ([офіційний прайс](https://platform.claude.com/docs/en/about-claude/pricing)).
+Оцінка: $0.542534 за три daily, $0.005928 за контроль, **$0.548462 разом**.
+Формула: (input + 5 × output) / 1000000. Judge-викликів немає.
+Це оцінка за usage, без звірки billing console та окремої cache-тарифікації; вона не є підтвердженим рахунком.
 
 ## Прогноз перед третім прогоном
 
