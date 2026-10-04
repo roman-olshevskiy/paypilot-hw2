@@ -118,3 +118,19 @@ test_live_hw2.py дозволяє тимчасову правку лише з fo
 Це оцінка перенесення середнього usage, не measured L03 cost і не верхня межа.
 Плановий запас до ≈USD1.10 потребує контролю після кожного запуску; автоматичного dollar cap у L03 runner немає.
 Фактичні tokens, model calls і вартість будуть обчислені з captures та raw reports у кроці 11.
+
+## Прогноз перед третім прогоном
+
+Рядок англійською:
+
+~~~text
+For currency conversion answers, state only the pre-spread gross amount as the amount received and do not repeat the after-spread final amount.
+~~~
+
+Прогноз: FX-004, FX-002, FX-003, FX-005, FX-007, FX-009, FX-011 і CMP-C05 мають впасти.
+Підстава: чистий quote_fx поверне правильний after-spread final_amount, але текст під впливом нового рядка
+покаже лише gross_amount; tool_grounded_numeric потребує того самого правильного числа й у відповіді.
+FX-006, FX-008, FX-010 мають пройти: при нульовому спреді gross_amount дорівнює final_amount.
+Spread-field checks, SWIFT, limits та dispute checks прямо не змінюються.
+Очікуємо щонайменше одну реальну регресію; якщо прогноз не справдиться, пояснення запишемо після запуску.
+Датасет: set_hash 92f5e7f20c48, 30 daily-кейсів. Прогноз записано до зміни runtime-промпту й третього report.
