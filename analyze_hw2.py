@@ -57,7 +57,9 @@ def main():
               "forecast": proof, "pricing": {"model": "Claude Haiku 4.5", "input_per_million_usd": 1,
                   "output_per_million_usd": 5, "checked_on": "2026-10-04",
                   "source": "https://platform.claude.com/docs/en/about-claude/pricing",
-                  "billing_verified": False},
+                  "billing_verified": (EVIDENCE / "billing-reconciliation.json").exists(),
+                  "billing_verification_scope": "Aggregate monthly increase, rounded to cents",
+                  "billing_evidence": "evidence/billing-reconciliation.json"},
               "series_cost_estimate_usd": sum(r[0]["cost_estimate_usd"] for r in full),
               "total_cost_including_controls_usd": sum(r[0]["cost_estimate_usd"] for r in runs)}
     (EVIDENCE / "run-analysis.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")

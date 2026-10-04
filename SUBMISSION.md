@@ -1,15 +1,15 @@
-# ДЗ №2 — артефакти здачі
+# Р”Р— в„–2 вЂ” Р°СЂС‚РµС„Р°РєС‚Рё Р·РґР°С‡С–
 
-Репозиторій: [paypilot-hw2, main](https://github.com/roman-olshevskiy/paypilot-hw2/tree/main).
+Р РµРїРѕР·РёС‚РѕСЂС–Р№: [paypilot-hw2, main](https://github.com/roman-olshevskiy/paypilot-hw2/tree/main).
 
-- [README: підхід, прогнози, результати та запуск](README.md)
-- [Golden dataset: 35 кейсів](golden.jsonl)
-- [Власний генератор](generate_golden.py)
-- [Залишкові ризики](residual-risk.md)
+- [README: РїС–РґС…С–Рґ, РїСЂРѕРіРЅРѕР·Рё, СЂРµР·СѓР»СЊС‚Р°С‚Рё С‚Р° Р·Р°РїСѓСЃРє](README.md)
+- [Golden dataset: 35 РєРµР№СЃС–РІ](golden.jsonl)
+- [Р’Р»Р°СЃРЅРёР№ РіРµРЅРµСЂР°С‚РѕСЂ](generate_golden.py)
+- [Р—Р°Р»РёС€РєРѕРІС– СЂРёР·РёРєРё](residual-risk.md)
 - [Baseline clean: 30/30](reports/golden-clean-20261004T000956.json)
 - [Lesson-03: 14/30](reports/golden-lesson-03-20261004T001243.json)
-- [Clean зі зміненим промптом: 30/30](reports/golden-clean-20261004T001507.json)
-- [Контроль відновлення: 1/1](reports/golden-clean-20261004T001927.json)
-- [Прогноз до третього прогону](evidence/forecast-commit.json)
-- [Аналіз usage та чутливості](evidence/run-analysis.json)
-- [Повні captures/traces](evidence/runs/)
+- [Clean Р·С– Р·РјС–РЅРµРЅРёРј РїСЂРѕРјРїС‚РѕРј: 30/30](reports/golden-clean-20261004T001507.json)
+- [РљРѕРЅС‚СЂРѕР»СЊ РІС–РґРЅРѕРІР»РµРЅРЅСЏ: 1/1](reports/golden-clean-20261004T001927.json)
+- [РџСЂРѕРіРЅРѕР· РґРѕ С‚СЂРµС‚СЊРѕРіРѕ РїСЂРѕРіРѕРЅСѓ](evidence/forecast-commit.json)
+- [РђРЅР°Р»С–Р· usage С‚Р° С‡СѓС‚Р»РёРІРѕСЃС‚С–](evidence/run-analysis.json)
+- [РџРѕРІРЅС– captures/traces](evidence/runs/)

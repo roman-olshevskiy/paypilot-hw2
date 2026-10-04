@@ -29,4 +29,4 @@ Ship it: прийняти цей набір як daily навчальний gate
 Zero regulatory risk: відкласти випуск до перевірки provenance, critical actions, пояснень і human-кейсів.
 
 91 chat requests / 187 model calls з контролем; 442697 input + 21153 output tokens.
-Оцінка $0.548462 за $1/$5 на мільйон; billing не звірено. Деталі та сирі докази — README й evidence/run-analysis.json.
+Розрахунок $0.548462; підтверджений приріст Cost this month $0.55 збігається після округлення. Деталі та сирі докази — README й evidence/run-analysis.json.
