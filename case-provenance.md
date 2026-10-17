@@ -39,3 +39,6 @@
 | TON-HW2-003 | own | edge | human / judge | Authored situational rubric absent from kit. |
 | TON-HW2-004 | own | edge | human / judge | Authored situational rubric absent from kit. |
 | TON-HW2-005 | own | edge | human / judge | Authored situational rubric absent from kit. |
+
+| CMP-C11-W | own | complaint | engine / contains | Window-text companion for PharmaPlus TX-0902; checks computed 120 days rather than eligibility alone. |
+| CMP-C12-W | own | complaint | engine / contains | Window-text companion for CloudServe TX-0201; checks computed 60 days rather than eligibility alone. |

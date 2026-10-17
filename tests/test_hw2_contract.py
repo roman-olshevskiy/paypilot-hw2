@@ -15,6 +15,7 @@ from loader import load, summarise
 from hw2_runtime import PromptGuard
 import hw2_capture as capture
 import stand
+import assertions as A
 
 
 class GoldenContract(unittest.TestCase):
@@ -23,21 +24,45 @@ class GoldenContract(unittest.TestCase):
         cls.cases = load(HERE / "sets/golden.jsonl")
 
     def test_homework_contract(self):
-        self.assertEqual(len(self.cases), 35)
+        self.assertEqual(len(self.cases), 37)
         meta = [c["additional_metadata"] for c in self.cases]
         own = [m for m in meta if m["added_in"] == "hw2"]
-        self.assertEqual(len(own), 23)
+        self.assertEqual(len(own), 25)
         self.assertEqual(sum(m["oracle"] == "human" for m in own), 5)
         self.assertEqual({m["source"] for m in meta}, {"engine", "complaint", "edge"})
         summary = summarise(self.cases)
         self.assertTrue({1, 2, 3, 4, 7} <= set(summary["ladder_levels"]))
-        self.assertEqual(summary["gates"], {"daily": 30, "release": 5})
+        self.assertEqual(summary["gates"], {"daily": 32, "release": 5})
         for c in self.cases:
             self.assertTrue(c["expected_output"])
             self.assertTrue(c["additional_metadata"]["why_this_level"])
             self.assertEqual(c["context"]["clock"], G.CLOCK)
             if c["additional_metadata"]["oracle"] == "human":
                 self.assertEqual(c["additional_metadata"]["runs"], 5)
+
+    def test_window_companions_match_engine_and_reject_other_window(self):
+        byid = {c["id"]: c for c in self.cases}
+        for cid, days, wrong in [("CMP-C11-W", 120, 60), ("CMP-C12-W", 60, 120)]:
+            with self.subTest(case=cid):
+                c = byid[cid]
+                self.assertEqual(G.evaluate_call(c["additional_metadata"]["engine_call"]), days)
+                self.assertEqual(c["expected_output"], f"{days} days")
+                self.assertTrue(A.level3_contains(f"The dispute window is {days} days.",
+                                                 c["expected_output"]).passed)
+                self.assertFalse(A.level3_contains(f"The dispute window is {wrong} days.",
+                                                  c["expected_output"]).passed)
+                self.assertFalse(A.level3_contains("The transaction is eligible.",
+                                                  c["expected_output"]).passed)
+
+    def test_v1_cases_are_preserved(self):
+        frozen = HERE / "evidence/datasets/golden-v1.jsonl"
+        self.assertEqual(hashlib.sha256(frozen.read_bytes()).hexdigest(),
+                         "92f5e7f20c48a91a0fe03c5307abfd8f6fbd0345b595320d96525cde812130d6")
+        old = [json.loads(line) for line in frozen.read_text(encoding="utf-8").splitlines()]
+        byid = {c["id"]: c for c in self.cases}
+        self.assertEqual(len(old), 35)
+        for c in old:
+            self.assertEqual(byid[c["id"]], c, c["id"])
 
     def test_engine_expectations_and_complaint_identity(self):
         for c in self.cases:
