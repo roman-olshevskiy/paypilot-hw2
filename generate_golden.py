@@ -161,6 +161,19 @@ def complaint_cases():
             novelty=("PharmaPlus TX-0902 belongs to CUS-0009 in the complaint and is absent from the kit generator and demo."
                      if complaint == "C-11" else
                      "CloudServe TX-0201 is absent from both kit generator and demo eligibility cases.")))
+        window_call = call + ".window_days"
+        window_days = evaluate_call(window_call)
+        out.append(base_case(cid + "-W",
+            f"I'm {customer}. For transaction {txid} under {reason}, "
+            "what is the applicable dispute window in days?",
+            f"{window_days} days",
+            assertion="contains", source="complaint", failure_mode="wrong_window",
+            severity="critical", customer=customer, call=window_call,
+            complaint_id=complaint, transaction_id=txid, reason_code=reason,
+            why_this_level="Level 3 checks the reason-specific window in the answer; "
+                           "a correct eligible flag alone cannot distinguish 60 from 90 or 120 days.",
+            novelty="Window-text companion to " + cid +
+                    "; retains the transaction/customer but checks a different observable from eligibility."))
     windows = policy.DISPUTE_WINDOWS_DAYS
     pattern = "(?is)^" + "".join("(?=.*" + code + ")" for code in windows) + r"(?=.*\b60\b).*"
     out.append(base_case("CMP-C14",
@@ -294,7 +307,7 @@ def main():
     content = "".join(json.dumps(c, ensure_ascii=False) + "\n" for c in cases)
     if args.output:
         Path(args.output).parent.mkdir(parents=True, exist_ok=True)
-        Path(args.output).write_text(content, encoding="utf-8")
+        Path(args.output).write_bytes(content.encode("utf-8"))
     else:
         sys.stdout.write(content)
     if args.manifest:
@@ -310,7 +323,7 @@ def main():
         manifest = {"clock": CLOCK, "sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
                     "cases": rows, "generator_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
         Path(args.manifest).parent.mkdir(parents=True, exist_ok=True)
-        Path(args.manifest).write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+        Path(args.manifest).write_bytes((json.dumps(manifest, indent=2) + "\n").encode("utf-8"))
     print(f"# {len(cases)} cases: {sum(c['additional_metadata']['added_in'] == 'hw2' for c in cases)} own, "
           f"{sum(c['additional_metadata']['oracle'] == 'human' for c in cases)} human", file=sys.stderr)
 

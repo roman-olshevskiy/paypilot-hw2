@@ -1,0 +1,35 @@
+set golden.jsonl set_hash 76c936eba16d
+{
+  "cases": 37,
+  "layers": {
+    "action": 7,
+    "generation": 30
+  },
+  "oracles": {
+    "corpus": 1,
+    "engine": 31,
+    "human": 5
+  },
+  "sources": {
+    "complaint": 9,
+    "edge": 16,
+    "engine": 12
+  },
+  "severities": {
+    "critical": 9,
+    "high": 28
+  },
+  "ladder_levels": [
+    1,
+    2,
+    3,
+    4,
+    7
+  ],
+  "gates": {
+    "daily": 32,
+    "release": 5
+  },
+  "human_oracle_pct": 13.5,
+  "severity_filled_pct": 100.0
+}

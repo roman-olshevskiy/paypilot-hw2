@@ -6,7 +6,7 @@
 Стенд: https://github.com/roman-olshevskiy/paypilot-stand, commit a876b7311d2b0a36bf4cb361cb4d27d5e211d5f2.
 Покласти golden.jsonl з цього репозиторію у sets/ кіту, generate_golden.py — у корінь кіту.
 Файли hw2_capture.py, hw2_runtime.py та tests/ копіюються в кіт для збирання повних доказів.
-Для offline acceptance також потрібний evidence/kit-baseline-manifest.json; для prompt-change тесту — evidence/forecast-commit.json.
+Для offline acceptance також потрібні evidence/kit-baseline-manifest.json і evidence/datasets/golden-v1.jsonl; для prompt-change тесту — evidence/forecast-commit.json.
 
 Стенд має бути локальним, із live Anthropic. Ключ лише в локальному .env стенду.
 Налаштування L03: STAND_DIR=../paypilot-stand, EVAL_STAND_URL=http://host.docker.internal:8000, JUDGE_MODEL=not-used.
@@ -17,7 +17,7 @@ Clock: 2026-09-15T10:00:00Z. Сам course runner не застосовує cont
 
 ~~~powershell
 # Без моделі: регенерація та перевірка
-docker compose run --rm -T eval python generate_golden.py --output sets/golden.jsonl --manifest evidence/generation-manifest.json
+docker compose run --rm -T eval python generate_golden.py --output sets/golden.jsonl --manifest evidence/generation-manifest-v2.json
 docker compose run --rm -T eval --set golden --dry-run
 docker compose run --rm -T eval python -m unittest discover -s tests -p test_hw2_contract.py -v
 
@@ -29,10 +29,12 @@ hw2_capture.py делегує незмінному cli.py/runner.py; форма�
 Не запускати інші тести паралельно на цьому стенді.
 Додаткові captures — evidence/runs/, сирі course reports — reports/.
 
-set_hash: 92f5e7f20c48
-Повний SHA256: 92f5e7f20c48a91a0fe03c5307abfd8f6fbd0345b595320d96525cde812130d6
+Поточний v2 set_hash: 76c936eba16d
+Повний SHA256 v2: 76c936eba16dd02e0a79cba2345282bf32400e857b356483dd84940ca1c7959b
 
-Для повтору з каталогу кіту, після копіювання власних support-файлів і evidence/forecast-commit.json:
+Нижче — історична послідовність v1, не запускати її на v2 з прогнозом v1. Для відтворення старих звітів скопіювати evidence/datasets/golden-v1.jsonl як sets/golden.jsonl. Для v2 потрібні нові звіти й окремий прогноз перед новим prompt experiment.
+
+Для історичного повтору з каталогу кіту, після копіювання support-файлів і evidence/forecast-commit.json:
 
 ~~~powershell
 $env:HW2_RUN_PROFILE='clean'

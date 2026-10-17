@@ -1,12 +1,26 @@
 # L03 · Automated Eval Suite — PayPilot · ДЗ №2
 
 Автор: Roman Olshevskyi. Підготовка: 2026-10-04. Мандат: Ship it.
-Статус: комплект ДЗ завершено; три живі daily-прогони та контроль відновлення виконано. Здача в LMS — посилання на main.
+Статус: ДЗ прийнято на Golden v1. Доповнення v2 від 2026-10-17 додає перевірки вікон спору; для v2 живих результатів ще немає.
 Репозиторій здачі: https://github.com/roman-olshevskiy/paypilot-hw2. Робоча гілка roman-olshevskyi/hw2; здача — main.
 
 Відтворення у чистому кіті: [RUNNING.md](RUNNING.md). Покажчик: [SUBMISSION.md](SUBMISSION.md).
 
-Команда baseline з каталогу кіту після підготовки за RUNNING.md:
+Стандартна команда запуску з каталогу кіту після копіювання golden.jsonl у sets/:
+
+~~~powershell
+docker compose run --rm eval --set golden --profile clean
+~~~
+
+Поточний **Golden v2: 37 кейсів, 25 власних, daily 32 / human 5**; set_hash **76c936eba16d**.
+Додано CMP-C11-W (120 days) і CMP-C12-W (60 days), oracle — результат disputes.check(...).window_days.
+Це окремі перевірки тексту, які доповнюють eligibility-кейси. Усі 35 кейсів v1 незмінні.
+[Архів v1](evidence/datasets/golden-v1.jsonl), hash 92f5e7f20c48, відповідає старим звітам нижче.
+[Генерація v2](evidence/generation-manifest-v2.json), [перевірки v2](evidence/golden-v2-offline-tests.txt).
+Прогноз і три живі звіти стосуються **v1**, а не нового v2; переписувати їх під новий hash не можна.
+Для v2 виконано лише offline-генерацію/тести й loader dry-run.
+
+Запуск через наш unittest для повних captures і відновлення оточення:
 
 ~~~powershell
 $env:HW2_RUN_PROFILE='clean'
@@ -19,8 +33,8 @@ python -m unittest discover -s tests -p test_live_hw2.py -v
 | Скарга | Власний кейс | Клієнт / операція та уточнення | Oracle | Чому не готовий demo |
 |---|---|---|---|---|
 | C-01 | SWF-001 | CUS-0001; конкретизовано SWIFT 1000 EUR для перевірки сумарного тарифу | engine: fx.transfer_fee | SWIFT-кейсів у демо та генераторі кіту немає |
-| C-11 | CMP-C11 | CUS-0009 Iryna, PharmaPlus TX-0902, fraud_card_not_present | engine: disputes.check | Саме ця операція та її eligibility не входять у кіт; не підміна TX-0701 |
-| C-12 | CMP-C12 | CUS-0002, CloudServe TX-0201 на EUR-рахунку; TX-0202 на USD не вважаємо доведеним повторним списанням | engine: disputes.check | Новий transaction-specific eligibility case; не просте перейменування питання про «60» |
+| C-11 | CMP-C11 + CMP-C11-W | CUS-0009 Iryna, PharmaPlus TX-0902, fraud_card_not_present | engine: disputes.check | Саме ця операція та її eligibility не входять у кіт; не підміна TX-0701 |
+| C-12 | CMP-C12 + CMP-C12-W | CUS-0002, CloudServe TX-0201 на EUR-рахунку; TX-0202 на USD не вважаємо доведеним повторним списанням | engine: disputes.check | Новий transaction-specific eligibility case; не просте перейменування питання про «60» |
 | C-14 | CMP-C14 | CUS-0002 як явний навчальний контекст; перелік усіх reason codes І duplicate window | engine: policy.DISPUTE_WINDOWS_DAYS | Нове комбіноване очікування; діагностику retrieval ця перевірка не покриває |
 | C-17 | TON-HW2-001 | CUS-0002 / TX-0201 — конкретизована ситуація роздратованого клієнта | human | Нова рубрика tone/next step, release, не оцінена daily |
 
@@ -48,13 +62,13 @@ CUSTOMERS/операції читаються з seed; transfer limits врах�
 Engine expectations обчислено чистими модулями; 12 kit-кейсів зберігають added_in=l03.
 CMP-003 (balance/DB) та CMP-006 (product phrase) виключено; деталі — case-provenance.md.
 
-35 кейсів: 12 kit + 18 власних обчислених + 5 власних human = 23 власних.
-Daily: 30 кейсів ×1; release: 5 human ×5, вони не входять до трьох daily-прогонів.
-Джерела: complaint=7, engine=12, edge=16. Oracle: engine=29, corpus=1, human=5.
-Рівні: 1/2/3/4/7. Severity 100%; critical=7, high=28.
+Поточний v2: 37 кейсів — 12 kit + 20 власних обчислених + 5 власних human = 25 власних.
+V2 daily: 32 кейси ×1; release: 5 human ×5. Історична серія v1 виконувала 30 daily.
+V2: complaint=9, engine=12, edge=16; oracle engine=31, corpus=1, human=5.
+Рівні: 1/2/3/4/7. Severity 100%; v2 critical=9, high=28.
 Точної новизни лише за відмінністю input недостатньо: [case-provenance.md](case-provenance.md) описує зміну параметра або observable.
 
-## Прогони
+## Прогони Golden v1
 
 | Прогін | Профіль | Результат | Сирий звіт |
 |---|---|---|---|

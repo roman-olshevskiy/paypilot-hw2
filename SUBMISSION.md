@@ -1,15 +1,16 @@
-# Р”Р— в„–2 вЂ” Р°СЂС‚РµС„Р°РєС‚Рё Р·РґР°С‡С–
+# ДЗ №2 — артефакти
 
-Р РµРїРѕР·РёС‚РѕСЂС–Р№: [paypilot-hw2, main](https://github.com/roman-olshevskiy/paypilot-hw2/tree/main).
+- [README: запуск, методика та версії результатів](README.md)
+- [Поточний Golden v2: 37 кейсів](golden.jsonl)
+- [Прийнятий Golden v1: 35 кейсів](evidence/datasets/golden-v1.jsonl)
+- [Генератор](generate_golden.py), [походження](case-provenance.md)
+- [Інструкція відтворення](RUNNING.md)
+- [Залишкові ризики: результати v1](residual-risk.md)
+- [Сирі звіти v1](reports/), [повні captures v1](evidence/runs/)
+- [Оригінальний прогноз v1](evidence/forecast-commit.json)
+- [Білінг v1](evidence/billing-reconciliation.json)
+- [Генерація v2](evidence/generation-manifest-v2.json)
+- [Offline-тести v2](evidence/golden-v2-offline-tests.txt), [dry-run v2](evidence/golden-v2-dry-run.txt)
 
-- [README: РїС–РґС…С–Рґ, РїСЂРѕРіРЅРѕР·Рё, СЂРµР·СѓР»СЊС‚Р°С‚Рё С‚Р° Р·Р°РїСѓСЃРє](README.md)
-- [Golden dataset: 35 РєРµР№СЃС–РІ](golden.jsonl)
-- [Р’Р»Р°СЃРЅРёР№ РіРµРЅРµСЂР°С‚РѕСЂ](generate_golden.py)
-- [Р—Р°Р»РёС€РєРѕРІС– СЂРёР·РёРєРё](residual-risk.md)
-- [Baseline clean: 30/30](reports/golden-clean-20261004T000956.json)
-- [Lesson-03: 14/30](reports/golden-lesson-03-20261004T001243.json)
-- [Clean Р·С– Р·РјС–РЅРµРЅРёРј РїСЂРѕРјРїС‚РѕРј: 30/30](reports/golden-clean-20261004T001507.json)
-- [РљРѕРЅС‚СЂРѕР»СЊ РІС–РґРЅРѕРІР»РµРЅРЅСЏ: 1/1](reports/golden-clean-20261004T001927.json)
-- [РџСЂРѕРіРЅРѕР· РґРѕ С‚СЂРµС‚СЊРѕРіРѕ РїСЂРѕРіРѕРЅСѓ](evidence/forecast-commit.json)
-- [РђРЅР°Р»С–Р· usage С‚Р° С‡СѓС‚Р»РёРІРѕСЃС‚С–](evidence/run-analysis.json)
-- [РџРѕРІРЅС– captures/traces](evidence/runs/)
+V2 містить дві нові перевірки C-11/C-12; нових живих звітів для нього немає.
+Старі reports і forecast стосуються лише v1 (hash 92f5e7f20c48).
